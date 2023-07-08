@@ -17,7 +17,7 @@ const viteExpressPlugin = (path: string): PluginOption => {
 }
 
 export default defineConfig({
-    plugins: [viteExpressPlugin('./src/server/server-app.ts')],
+    plugins: [viteExpressPlugin('./src/server/server-app.tsx')],
     server: {
         port: 3000,
     }

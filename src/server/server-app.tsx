@@ -1,34 +1,33 @@
 import express from "express";
-import ReactDOM from 'react-dom/server';
-import {App} from '../client/app.tsx';
+import {serverRendererApp} from './server-renderer.tsx';
+
+export interface RendererOutput {
+    html: string;
+    statusCode: number;
+}
 
 const createServerApp = async () => {
     const app = express();
 
     const vite = await (await import('vite')).createServer();
 
-    app.get('/', async (req, res) => {
+    app.use<{}, {}, {}, {}, {output: RendererOutput}>(serverRendererApp, async (req, res, next) => {
         const url = req.originalUrl;
-        const appHtml = ReactDOM.renderToString(<App />);
 
-        let html = `
-<html lang="en">
+        const {output} = res.locals;
+        if (output === undefined) {
+            next();
+            return;
+        }
 
-<body>
-<div id="app">${appHtml}</div>
-</body>
+        const viteTransformedHtml = await vite.transformIndexHtml(url, output.html);
 
-<script type="module" src="/src/client/client-app.tsx"></script>
+        res.setHeader('Content-Type', 'text/html');
 
-</html>
-`
-
-        html = await vite.transformIndexHtml(url, html);
         res
-            .status(200)
-            .setHeader('Content-Type', 'text/html')
-            .send(html)
-    })
+            .status(output.statusCode)
+            .send(viteTransformedHtml);
+    });
 
     return app;
 };

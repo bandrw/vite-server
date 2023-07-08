@@ -2,21 +2,28 @@ import express from "express";
 import ReactDOM from 'react-dom/server';
 import {App} from '../client/app.tsx';
 
-const createServerApp = () => {
+const createServerApp = async () => {
     const app = express();
 
-    app.get('/', (req, res) => {
+    const vite = await (await import('vite')).createServer();
+
+    app.get('/', async (req, res) => {
+        const url = req.originalUrl;
         const appHtml = ReactDOM.renderToString(<App />);
 
-        const html = `
-<html>
+        let html = `
+<html lang="en">
+
 <body>
 <div id="app">${appHtml}</div>
 </body>
+
 <script type="module" src="/src/client/client-app.tsx"></script>
+
 </html>
 `
 
+        html = await vite.transformIndexHtml(url, html);
         res
             .status(200)
             .setHeader('Content-Type', 'text/html')

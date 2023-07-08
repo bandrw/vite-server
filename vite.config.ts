@@ -1,4 +1,5 @@
 import {defineConfig, PluginOption} from "vite";
+import react from '@vitejs/plugin-react'
 
 const viteExpressPlugin = (path: string): PluginOption => {
     return {
@@ -7,7 +8,7 @@ const viteExpressPlugin = (path: string): PluginOption => {
             server.middlewares.use(async (req, res, next) => {
                 try {
                     const { app } = await server.ssrLoadModule(path);
-                    app(req, res, next);
+                    (await app)(req, res, next);
                 } catch (err) {
                     console.error(err);
                 }
@@ -17,7 +18,7 @@ const viteExpressPlugin = (path: string): PluginOption => {
 }
 
 export default defineConfig({
-    plugins: [viteExpressPlugin('./src/server/server-app.tsx')],
+    plugins: [react(), viteExpressPlugin('./src/server/server-app.tsx')],
     server: {
         port: 3000,
     }

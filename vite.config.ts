@@ -1,6 +1,6 @@
-import {defineConfig} from "vite";
+import {defineConfig, PluginOption} from "vite";
 
-const viteExpressPlugin = (path) => {
+const viteExpressPlugin = (path: string): PluginOption => {
     return {
         name: "vite-express-plugin",
         configureServer: async (server) => {
@@ -17,7 +17,7 @@ const viteExpressPlugin = (path) => {
 }
 
 export default defineConfig({
-    plugins: [viteExpressPlugin('./src/server/server-app.js')],
+    plugins: [viteExpressPlugin('./src/server/server-app.ts')],
     server: {
         port: 3000,
     }

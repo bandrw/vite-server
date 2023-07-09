@@ -2,47 +2,28 @@ import express from 'express';
 import {RendererOutput} from './server-app.tsx';
 import ReactDOM from 'react-dom/server';
 import {App} from '../client/app.tsx';
-import {HTMLBuilder} from './tools/html-builder.ts';
 
 const createServerRendererApp = () => {
     const app = express();
 
     app.get<{}, {}, {}, {}, {output: RendererOutput}>('/', (req, res, next) => {
-        const html = new HTMLBuilder({
-            tagName: 'html',
-            attributes: {
-                lang: 'en',
-            },
-            children: [
-                new HTMLBuilder({
-                    tagName: 'head',
-                }),
-                new HTMLBuilder({
-                    tagName: 'body',
-                    children: [
-                        new HTMLBuilder({
-                            tagName: 'div',
-                            attributes: {
-                                id: 'app',
-                            },
-                            children: [
-                                ReactDOM.renderToString(<App />),
-                            ],
-                        }),
-                    ],
-                }),
-                new HTMLBuilder({
-                    tagName: 'script',
-                    attributes: {
-                        type: 'module',
-                        src: '/src/client/client-app.tsx',
-                    },
-                }),
-            ],
-        });
+        const html = '<!DOCTYPE html>' + ReactDOM.renderToString(
+            <html lang="en">
+                <head>
+                    <meta httpEquiv="Content-type" content="text/html; charset=utf-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                </head>
+                <body>
+                    <div id="app">
+                        <App />
+                    </div>
+                </body>
+                <script type="module" src="/src/client/client-app.tsx"></script>
+            </html>
+        );
 
         res.locals.output = {
-            html: html.outerHTML,
+            html,
             statusCode: 200,
         }
 

@@ -5,15 +5,18 @@ const viteExpressPlugin = (path: string): PluginOption => {
     return {
         name: "vite-express-plugin",
         configureServer: async (server) => {
-            server.middlewares.use(async (req, res, next) => {
-                try {
-                    const { app } = await server.ssrLoadModule(path);
-                    (await app)(req, res, next);
-                } catch (err) {
-                    console.error(err);
-                }
-            });
-        },
+            // inject a middleware after internal middlewares
+            return () => {
+                server.middlewares.use(async (req, res, next) => {
+                    try {
+                        const { app } = await server.ssrLoadModule(path);
+                        (await app)(req, res, next);
+                    } catch (err) {
+                        console.error(err);
+                    }
+                });
+            }
+        }
     };
 }
 

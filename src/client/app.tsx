@@ -1,12 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
+import {Router} from './shared/router/router.tsx';
+import {ServerRendererProps, OnRenderProps} from '../server/server-renderer.tsx';
 
-export const App: React.FC = () => {
-    const [state, setState] = useState(0);
-
+export const App: React.FC<OnRenderProps<ServerRendererProps>> = ({onRender}) => {
     return (
-        <div>
-            <div>This is real app! {state}</div>
-            <button onClick={() => setState(prev => prev + 1)}>click</button>
-        </div>
+        <Router onRender={onRender} />
     );
 };

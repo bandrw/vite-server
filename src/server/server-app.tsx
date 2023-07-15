@@ -11,23 +11,26 @@ const createServerApp = async () => {
 
     const vite = await (await import('vite')).createServer();
 
-    app.use<{}, {}, {}, {}, {output: RendererOutput}>(serverRendererApp, async (req, res, next) => {
-        const url = req.originalUrl;
+    app.use<{}, {}, {}, {}, {output: RendererOutput}>(
+        serverRendererApp,
+        async (req, res, next) => {
+            const url = req.originalUrl;
 
-        const {output} = res.locals;
-        if (output === undefined) {
-            next();
-            return;
-        }
+            const {output} = res.locals;
+            if (output === undefined) {
+                next();
+                return;
+            }
 
-        const viteTransformedHtml = await vite.transformIndexHtml(url, output.html);
+            const viteTransformedHtml = await vite.transformIndexHtml(url, output.html);
 
-        res.setHeader('Content-Type', 'text/html');
+            res.setHeader('Content-Type', 'text/html');
 
-        res
-            .status(output.statusCode)
-            .send(viteTransformedHtml);
-    });
+            res
+                .status(output.statusCode)
+                .send(viteTransformedHtml);
+        },
+    );
 
     return app;
 };

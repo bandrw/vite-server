@@ -1,4 +1,10 @@
 import {hydrateRoot} from 'react-dom/client';
 import {App} from './app.tsx';
+import {BrowserRouter} from 'react-router-dom';
 
-hydrateRoot(document.getElementById('app')!, <App />)
+hydrateRoot(
+    document.getElementById('app')!,
+    <BrowserRouter>
+        <App />
+    </BrowserRouter>,
+)

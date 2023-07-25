@@ -1,6 +1,6 @@
 import React from 'react';
 import express from 'express';
-import {RendererOutput} from './server-app.tsx';
+import {ServerAppContext} from './server-app.tsx';
 import ReactDOM from 'react-dom/server';
 import {App} from '../client/app.tsx';
 import {StaticRouter} from 'react-router-dom/server';
@@ -18,39 +18,48 @@ export interface OnRenderProps<T> {
 const createServerRendererApp = () => {
     const app = express();
 
-    app.get<{}, {}, {}, {}, {output: RendererOutput}>('*', async (req, res, next) => {
+    app.get<{}, {}, {}, {}, ServerAppContext>('*', async (req, res) => {
         const url = req.originalUrl;
 
         const context = {statusCode: 200};
 
-        const html = '<!DOCTYPE html>' + ReactDOM.renderToString(
+        const {pipe, abort} = ReactDOM.renderToPipeableStream(
             <html lang="en">
-                <head>
-                    <meta httpEquiv="Content-type" content="text/html; charset=utf-8" />
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                </head>
-                <body>
-                    <div id="app">
-                        <StaticRouter location={url}>
-                            <App
-                                onRender={({statusCode}) => {
-                                    context.statusCode = statusCode;
-                                }}
-                            />
-                        </StaticRouter>
-                    </div>
-                </body>
-                <script type="module" src="/src/client/client-app.tsx"></script>
-            </html>
+            <head>
+                <meta httpEquiv="Content-type" content="text/html; charset=utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                {res.locals.headTags}
+            </head>
+            <body>
+            <div id="app">
+                <StaticRouter location={url}>
+                    <App
+                        onRender={({statusCode}) => {
+                            context.statusCode = statusCode;
+                        }}
+                    />
+                </StaticRouter>
+            </div>
+            </body>
+            <script type="module" src="/src/client/client-app.tsx"></script>
+            </html>,
+            {
+                onShellReady() {
+                    res.statusCode = context.statusCode;
+                    res.setHeader('Content-type', 'text/html');
+                    pipe(res);
+                },
+                onShellError(err) {
+                    res.statusCode = 500;
+                    res.send(
+                        ReactDOM.renderToString(<div>500 error page</div>)
+                    );
+                    console.error(err);
+                },
+            }
         );
-        const statusCode = context.statusCode;
 
-        res.locals.output = {
-            html,
-            statusCode,
-        }
-
-        next();
+        setTimeout(abort, 2000);
     });
 
     return app;

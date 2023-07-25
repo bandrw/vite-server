@@ -1,35 +1,33 @@
 import express from "express";
+import React from 'react';
 import {serverRendererApp} from './server-renderer.tsx';
 
-export interface RendererOutput {
-    html: string;
-    statusCode: number;
+export interface ServerAppContext {
+    headTags?: React.ReactNode;
 }
+
+/**
+ * Check vite.transformIndexHtml
+ */
+const viteScript = `
+import RefreshRuntime from "/@react-refresh"
+RefreshRuntime.injectIntoGlobalHook(window)
+window.$RefreshReg$ = () => {}
+window.$RefreshSig$ = () => (type) => type
+window.__vite_plugin_react_preamble_installed__ = true
+`;
 
 const createServerApp = async () => {
     const app = express();
 
-    const vite = await (await import('vite')).createServer();
-
-    app.use<{}, {}, {}, {}, {output: RendererOutput}>(
-        serverRendererApp,
+    app.use<{}, {}, {}, {}, ServerAppContext>(
         async (req, res, next) => {
-            const url = req.originalUrl;
-
-            const {output} = res.locals;
-            if (output === undefined) {
-                next();
-                return;
-            }
-
-            const viteTransformedHtml = await vite.transformIndexHtml(url, output.html);
-
-            res.setHeader('Content-Type', 'text/html');
-
-            res
-                .status(output.statusCode)
-                .send(viteTransformedHtml);
+            res.locals.headTags = (
+                <script type="module" dangerouslySetInnerHTML={{__html: viteScript}}/>
+            );
+            next();
         },
+        serverRendererApp,
     );
 
     return app;

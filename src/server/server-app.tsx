@@ -17,7 +17,7 @@ window.$RefreshSig$ = () => (type) => type
 window.__vite_plugin_react_preamble_installed__ = true
 `;
 
-const createServerApp = async () => {
+const createServerApp = () => {
     const app = express();
 
     app.use<{}, {}, {}, {}, ServerAppContext>(

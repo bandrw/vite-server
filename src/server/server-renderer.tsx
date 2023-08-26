@@ -5,6 +5,8 @@ import ReactDOM from 'react-dom/server';
 import {App} from '../client/app.tsx';
 import {StaticRouter} from 'react-router-dom/server';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 export interface ServerRendererProps {
     statusCode: number;
 }
@@ -15,8 +17,16 @@ export interface OnRenderProps<T> {
     onRender?: (data: T) => void;
 }
 
-const createServerRendererApp = () => {
+const createServerRendererApp = async () => {
     const app = express();
+
+    const clientAppEntryPoint = await (async () => {
+        if (isProduction) {
+            const fileName = (await import('../../build/client/manifest.json')).default['src/client/client-app.tsx'].file;
+            return `/static/${fileName}`;
+        }
+        return '/src/client/client-app.tsx';
+    })();
 
     app.get<{}, {}, {}, {}, ServerAppContext>('*', async (req, res) => {
         const url = req.originalUrl;
@@ -41,7 +51,11 @@ const createServerRendererApp = () => {
                 </StaticRouter>
             </div>
             </body>
-            <script type="module" src="/src/client/client-app.tsx"></script>
+            {isProduction ? (
+                <script type="module" src={clientAppEntryPoint}></script>
+            ) : (
+                <script type="module" src={clientAppEntryPoint}></script>
+            )}
             </html>,
             {
                 onShellReady() {
@@ -65,4 +79,4 @@ const createServerRendererApp = () => {
     return app;
 };
 
-export const serverRendererApp = createServerRendererApp();
+export const createApp = createServerRendererApp;

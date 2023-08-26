@@ -8,7 +8,8 @@ const ssrModulePlugin = ({scriptPath, afterDefaultMiddlewares = false}: {scriptP
             const injectMiddleware = () => {
                 server.middlewares.use(async (req, res, next) => {
                     try {
-                        const { app } = await server.ssrLoadModule(scriptPath);
+                        const { createApp } = await server.ssrLoadModule(scriptPath);
+                        const app = await createApp();
                         app(req, res, next);
                     } catch (err) {
                         console.error(err);

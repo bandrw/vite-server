@@ -1,6 +1,6 @@
 import express from 'express';
 
-const createApiApp = () => {
+const createApiApp = async () => {
     const app = express();
 
     app.get('/api/items', (req, res) => {
@@ -10,4 +10,4 @@ const createApiApp = () => {
     return app;
 }
 
-export const app = createApiApp();
+export const createApp = createApiApp;

@@ -1,6 +1,8 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import {ROUTES} from '../shared/router/routes.ts';
+
+import {ROUTES} from '@shared/router/routes';
+
 import data from './blog-data.json';
 
 const BlogPage: React.FC = () => {
@@ -13,4 +15,5 @@ const BlogPage: React.FC = () => {
     );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default BlogPage;

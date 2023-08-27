@@ -19,9 +19,8 @@
         "useUnknownInCatchVariables": true,
         "forceConsistentCasingInFileNames": true,
 
-        /* Bundler mode */
-        "moduleResolution": "bundler",
-        "allowImportingTsExtensions": true,
+        "moduleResolution": "node",
+        "allowImportingTsExtensions": false,
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
@@ -29,7 +28,24 @@
 
         /* Linting */
         "strict": true,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+        "paths": {
+            "@shared/*": [
+                "src/client/shared/*"
+            ],
+            "@pages/*": [
+                "src/client/pages/*"
+            ],
+            "@features/*": [
+                "src/client/features/*"
+            ],
+            "@entities/*": [
+                "src/client/entities/*"
+            ],
+            "@app/*": [
+                "src/client/app/*"
+            ]
+        }
     },
     "include": ["src", "vite"]
 }

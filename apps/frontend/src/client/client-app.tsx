@@ -1,10 +1,12 @@
+import React from 'react';
 import {hydrateRoot} from 'react-dom/client';
-import {App} from './app.tsx';
 import {BrowserRouter} from 'react-router-dom';
+
+import {App} from './app';
 
 hydrateRoot(
     document.getElementById('app')!,
     <BrowserRouter>
         <App />
     </BrowserRouter>,
-)
+);

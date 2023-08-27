@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import {ROUTES} from '../shared/router/routes.ts';
+
+import {ROUTES} from '@shared/router/routes';
 
 const NotFoundPage: React.FC = () => {
     return (
@@ -11,4 +12,5 @@ const NotFoundPage: React.FC = () => {
     );
 };
 
+// eslint-disable-next-line import/no-default-export
 export default NotFoundPage;

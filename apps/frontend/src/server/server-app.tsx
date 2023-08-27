@@ -1,6 +1,8 @@
-import express, * as Express from "express";
 import React from 'react';
-import {createApp as createServerRendererApp} from './server-renderer.tsx';
+
+import express, * as Express from 'express';
+
+import {createApp as createServerRendererApp} from './server-renderer';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -19,10 +21,13 @@ window.$RefreshSig$ = () => (type) => type
 window.__vite_plugin_react_preamble_installed__ = true
 `;
 
-const reactRefreshMiddleware = async (req: Express.Request, res: Express.Response<unknown, ServerAppContext>, next: Express.NextFunction) => {
-    res.locals.headTags = (
-        <script type="module" dangerouslySetInnerHTML={{__html: viteReactRefreshScript}}/>
-    );
+const reactRefreshMiddleware = async (
+    req: Express.Request,
+    res: Express.Response<unknown, ServerAppContext>,
+    next: Express.NextFunction,
+) => {
+    // eslint-disable-next-line react/no-danger
+    res.locals.headTags = <script type="module" dangerouslySetInnerHTML={{__html: viteReactRefreshScript}} />;
     next();
 };
 

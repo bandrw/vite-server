@@ -1,7 +1,8 @@
-import {createApp as createServerApp} from '../../build/server/server-app.js';
-import {createApp as createServerApiApp} from '../../build/server-api/api-app.js';
-import express from "express";
-import path from "path";
+import express from 'express';
+import path from 'path';
+
+import {createApp as createServerApiApp} from '../../build/server-api/api-app.mjs';
+import {createApp as createServerApp} from '../../build/server/server-app.mjs';
 
 const createApp = async () => {
     const app = express();
@@ -18,7 +19,7 @@ const createApp = async () => {
     return app;
 };
 
-;(async () => {
+(async () => {
     const app = await createApp();
 
     app.listen(3000, () => {
